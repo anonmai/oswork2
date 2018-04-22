@@ -24,8 +24,6 @@ start32:
 		movw %ax, %gs                   #设置视频段寄存器，指向视频段描述符
 
         jmp bootMain                    #跳转至bootMain函数 定义于boot.c
-1:      hlt
-        jmp 1b  
 
 .p2align 2
 gdt: # 8 bytes for each table entry, at least 1 entry
@@ -46,3 +44,5 @@ gdtDesc: # 6 bytes in total
 .equ SelectorCode,  gdt_code  - gdt
 .equ SelectorData,  gdt_code  - gdt
 .equ SelectorVideo, gdt_video - gdt
+.org  0x1fe,0x90              #从第511个字节开始
+.word 0xaa55                  #填充55和aa
