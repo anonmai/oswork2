@@ -1,6 +1,10 @@
 #include "x86.h"
 #include "device.h"
 
+unsigned p = 0xb8000;
+int line = 0;
+int oneline = 0;
+
 void syscallHandle(struct TrapFrame *tf);
 
 void GProtectFaultHandle(struct TrapFrame *tf);
