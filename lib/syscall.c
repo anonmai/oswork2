@@ -5,6 +5,8 @@
  * io lib here
  * 库函数写在这
  */
+#define NULL 0
+
 int32_t syscall(int num, uint32_t a1,uint32_t a2,
 		uint32_t a3, uint32_t a4, uint32_t a5)
 {
