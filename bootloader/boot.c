@@ -9,10 +9,9 @@ void bootMain(void) {
 	int SectNum = 200;					//内核代码占200个扇区
 	int KernelSize = SECTSIZE * SectNum;//内核大小512×200*
 	unsigned char buf[KernelSize];		//用数组装下内核代码
-	unsigned int sceno = 1;				//设置要读写的磁盘扇区号为1，即第二个磁盘扇区
-	for(int i=0;i<200;i++){
-		readSect(buf + i * SECTSIZE , sceno);
-		sceno+=1;
+	//unsigned int sceno = 1;				//设置要读写的磁盘扇区号为1，即第二个磁盘扇区
+	for(int i=0; i<SECTSIZE ;++i){
+		readSect(buf + i * SECTSIZE , i+1);
 	}
 	struct ELFHeader *elf = (void *)buf;
 	struct ProgramHeader *ph = (void *)elf + elf->phoff;

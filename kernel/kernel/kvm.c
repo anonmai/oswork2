@@ -1,5 +1,6 @@
 #include "x86.h"
 #include "device.h"
+#include <string.h>
 
 SegDesc gdt[NR_SEGMENTS];
 TSS tss;
@@ -39,6 +40,9 @@ void initSeg() {
 	/*
 	 * 初始化TSS
 	 */
+	tss.ss0 = KSEL(SEG_KDATA);
+	tss.esp0 = 0xf00000;
+
 	asm volatile("ltr %%ax":: "a" (KSEL(SEG_TSS)));
 
 	/*设置正确的段寄存器*/
@@ -53,11 +57,33 @@ void enterUserSpace(uint32_t entry) {
 	 * you should set the right segment registers here
 	 * and use 'iret' to jump to ring3
 	 */
+	int SectNum = 200;
+	int KernelSize = SECTSIZE * SectNum;
+	unsigned char buf[KernelSize];
+	for(int i =0;i < SectNum;++i)
+		readSect(buf + i * SECTSIZE, i+1+SectNum);
+	struct ELFHeader *elf = (void *)buf;
+	struct ProgramHeader *ph = (void *)elf + elf->phoff;
+	for(int i = elf->phnum; i > 0; --i)
+	{
+		memcpy((void *)ph->vaddr, buf + ph->off, ph->filesz);
+		memset((void *)ph->vaddr + ph->filesz, 0, ph->memsz - ph->filesz);
+		ph = (void *)ph + elf->phentsize;
+	}
+	entry = (unsigned)elf->entry;
+	asm volatile("movw %%ax, %%es"::"a"(USEL(SEG_UDATA)));
+	asm volatile("movw %%ax, %%ds"::"a"(USEL(SEG_UDATA)));
+	asm volatile("pushw %0"::"i"(USEL(SEG_UDATA)));
+	asm volatile("pushl %0"::"i"(128<<10));
+	asm volatile("pushl %0"::"i"(0x2));
+	asm volatile("pushl %0"::"i"(USEL(SEG_UCODE)));
+	asm volatile("pushl %0"::"m"(entry));
+
 	asm volatile("iret");
 }
 
 void loadUMain(void) {
 
 	/*加载用户程序至内存*/
-
+	enterUserSpace(0x200000);
 }

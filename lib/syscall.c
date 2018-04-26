@@ -25,7 +25,7 @@ int32_t syscall(int num, uint32_t a1,uint32_t a2,
 	return ret;
 }
 
-void printf(const char *format,...){
+void printf(char *format,...){
 	char buffer[1024];
 	int temp = 0;
 	va_list arg;

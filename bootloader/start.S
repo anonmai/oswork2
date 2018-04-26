@@ -14,14 +14,13 @@ start:
 
 .code32
 start32:
-        movw $SelectorCode, %ax
+        movw $0x10, %ax
 	movw %ax, %es
         movw %ax, %fs
-        movw $SelectorData, %ax
-        movw %ax, %ds                   #初始化es，fs，ds等
-           
-        movw $SelectorVideo, %ax        
-	movw %ax, %gs                   #设置视频段寄存器，指向视频段描述符
+        movw %ax, %fs 
+        movw %ax, %ss                   #初始化es，fs，ds等
+        movl $0, %ebp
+        movl $(128<<20), %esp   
 
         jmp bootMain                    #跳转至bootMain函数 定义于boot.c
 
@@ -40,6 +39,3 @@ gdt_video:
 gdtDesc: # 6 bytes in total
 	.word (gdtDesc - gdt -1)
 	.long gdt
-.equ SelectorCode,  gdt_code  - gdt
-.equ SelectorData,  gdt_code  - gdt
-.equ SelectorVideo, gdt_video - gdt

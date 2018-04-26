@@ -45,7 +45,7 @@ void syscallHandle(struct TrapFrame *tf) {
 		else{
 			line++;
 			oneline = 0;
-			p = oxb8000 + line *160;
+			p = 0xb8000 + line * 160;
 		}
 	}
 	tf->eax = tf->edx;
