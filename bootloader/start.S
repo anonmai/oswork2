@@ -2,6 +2,8 @@
 
 .global start
 start:
+        //movw $0x0000, %ax               #屏幕清零
+        //int  $0x10                      #中断调用
 	cli                             #关闭中断
         inb $0x92, %al                  #启动A20总线
         orb $0x02, %al
